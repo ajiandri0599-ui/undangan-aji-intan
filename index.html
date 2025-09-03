@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Undangan Pernikahan — Aji & Intan</title>
+  <style>
+    :root{--accent:#b08d57;--dark: #2b2b2b;--muted:#6b6b6b}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter, "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial; background:#f7f5f2;color:var(--dark);-webkit-font-smoothing:antialiased}
+    /* Splash */
+    .splash{position:fixed;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.35)), url('https://images.unsplash.com/photo-1508672019048-805c876b67e2?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;display:flex;align-items:center;justify-content:center;z-index:50;color:white;padding:20px;transition:opacity .5s}
+    .splash.hidden{opacity:0;visibility:hidden}
+    .splash-card{max-width:680px;text-align:center;background:rgba(255,255,255,0.06);padding:36px;border-radius:12px;backdrop-filter:blur(4px)}
+    .splash h1{margin:0;font-size:32px;letter-spacing:2px}
+    .splash h2{margin:8px 0 16px;font-weight:400}
+    .open-btn{display:inline-block;padding:10px 18px;border-radius:999px;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;cursor:pointer;border:none}
+    /* Container */
+    .container{max-width:1000px;margin:30px auto;padding:20px}
+    .card{background:white;border-radius:12px;padding:22px;box-shadow:0 6px 20px rgba(20,20,20,0.06);margin-bottom:20px}
+    .couple{display:flex;gap:20px;align-items:center}
+    .avatar{width:120px;height:120px;border-radius:12px;flex-shrink:0;background-size:cover;background-position:center;box-shadow:0 6px 18px rgba(0,0,0,0.08)}
+    .names{flex:1}
+    .names h1{margin:0;font-family:Georgia, serif;font-size:28px}
+    .names p{margin:6px 0;color:var(--muted)}
+    .date{font-weight:600;color:var(--accent);margin-top:6px}
+    /* Countdown */
+    .countdown{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+    .countdown .box{min-width:90px;background:#fff;border-radius:8px;padding:12px 10px;text-align:center;box-shadow:0 3px 12px rgba(0,0,0,0.04)}
+    .box .num{font-size:20px;font-weight:700}
+    .box .label{font-size:12px;color:var(--muted);margin-top:6px}
+    /* Detail acara */
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:20px}
+    .schedule{padding:10px 0}
+    .event{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px dashed #eee}
+    .event:last-child{border-bottom:0}
+    .time{min-width:110px;font-weight:700;color:var(--accent)}
+    .desc{flex:1}
+    .maps a{display:inline-block;padding:8px 12px;background:var(--accent);color:white;border-radius:8px;text-decoration:none;margin-top:8px}
+    /* Gallery */
+    .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+    .gallery img{width:100%;height:130px;object-fit:cover;border-radius:8px}
+    /* Comments */
+    .comments .form{display:flex;gap:8px;flex-direction:column}
+    input, textarea{padding:10px;border:1px solid #e2e2e2;border-radius:8px;font-size:14px}
+    button.primary{background:var(--accent);color:white;padding:10px;border-radius:8px;border:0;font-weight:700;cursor:pointer}
+    .comment-list{margin-top:12px}
+    .comment-item{padding:10px;border-radius:8px;background:#faf9f8;margin-bottom:8px}
+    .meta{font-size:12px;color:var(--muted);margin-bottom:6px}
+    /* Footer */
+    footer{text-align:center;color:var(--muted);margin:18px 0 60px}
+    /* Responsive */
+    @media(max-width:900px){.grid{grid-template-columns:1fr}.gallery{grid-template-columns:repeat(2,1fr)}.avatar{width:100px;height:100px}}
+    @media(max-width:520px){.gallery img{height:100px} .splash h1{font-size:24px}}
+    /* music control */
+    .music-control{position:fixed;right:18px;bottom:18px;background:white;padding:10px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,0.08);display:flex;gap:8px;align-items:center;z-index:40}
+    .music-control button{border:0;background:transparent;cursor:pointer}
+  </style>
+</head>
+<body>
+
+<!-- Splash modal -->
+<div id="splash" class="splash">
+  <div class="splash-card">
+    <h1>Aji & Intan</h1>
+    <h2>Minggu, 28 September 2025</h2>
+    <p>Dengan memohon rahmat Allah SWT, kami mengundang Bapak/Ibu/Saudara/i untuk hadir pada acara pernikahan kami.</p>
+    <div style="margin-top:18px">
+      <button class="open-btn" id="openInvite">Buka Undangan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Music control -->
+<div class="music-control" id="musicControl" style="display:none">
+  <button id="playBtn" title="Play/Pause">▶️</button>
+  <div style="font-size:13px;color:var(--dark)">Musik</div>
+</div>
+
+<!-- Audio -->
+<audio id="bgMusic" loop preload="auto">
+  <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3" type="audio/mpeg">
+</audio>
+
+<div class="container" id="mainContent" style="opacity:0;transform:translateY(10px);transition:all .6s">
+
+  <!-- Hero -->
+  <div class="card couple">
+    <div class="avatar" style="background-image:url('https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80')"></div>
+    <div class="names">
+      <h1>Aji & Intan</h1>
+      <p>Dengan penuh bahagia kami mengundang kehadiran Anda pada pernikahan kami.</p>
+      <div class="date">Minggu, 28 September 2025 — Akad: 08:00 WIB</div>
+      <div class="countdown" id="countdown">
+        <!-- countdown boxes -->
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div>
+      <!-- Story -->
+      <div class="card">
+        <h3>Our Story</h3>
+        <p>Aji & Intan, dua insan yang dipertemukan oleh takdir. Dari perkenalan sederhana hingga memutuskan untuk melangkah bersama seumur hidup. Terima kasih atas doa dan kehadiran Bapak/Ibu/Saudara/i.</p>
+      </div>
+
+      <!-- Schedule -->
+      <div class="card schedule">
+        <h3>Rangka Acara</h3>
+        <div class="event">
+          <div class="time">08:00 - 09:00</div>
+          <div class="desc"><strong>Akad Nikah</strong><div>Kp. Kesik RT/RW 02/02, Desa Mekarsari, Kec. Panimbang, Pandeglang, Banten</div></div>
+        </div>
+        <div class="event">
+          <div class="time">Setelah Akad - Selesai</div>
+          <div class="desc"><strong>Resepsi</strong><div>Langsung dilanjutkan setelah akad sampai selesai (terbuka untuk keluarga & tamu undangan)</div></div>
+        </div>
+        <div style="margin-top:12px" class="maps">
+          <a href="https://maps.app.goo.gl/NGqMARoetCRCrP637?g_st=ic" target="_blank">📍 Lihat Lokasi di Google Maps</a>
+        </div>
+      </div>
+
+      <!-- Gallery -->
+      <div class="card">
+        <h3>Galeri</h3>
+        <div class="gallery" id="gallery">
+          <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80" alt="gallery1">
+          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80" alt="gallery2">
+          <img src="https://images.unsplash.com/photo-1519741495043-2c8f0d0b3f1d?auto=format&fit=crop&w=800&q=80" alt="gallery3">
+          <img src="https://images.unsplash.com/photo-1524253482453-3fed8d2fe12b?auto=format&fit=crop&w=800&q=80" alt="gallery4">
+          <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=80" alt="gallery5">
+          <img src="https://images.unsplash.com/photo-1509223197845-458d87318791?auto=format&fit=crop&w=800&q=80" alt="gallery6">
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <!-- Invite card right column -->
+      <div class="card">
+        <h3>Detail Undangan</h3>
+        <p><strong>Hari/Tanggal:</strong> Minggu, 28 September 2025<br><strong>Akad:</strong> 08:00 WIB<br><strong>Resepsi:</strong> Setelah akad sampai selesai<br><strong>Lokasi:</strong> Kp. Kesik RT/RW 02/02, Desa Mekarsari, Kec. Panimbang, Pandeglang, Banten</p>
+        <div style="margin-top:12px">
+          <a class="maps" href="https://maps.app.goo.gl/NGqMARoetCRCrP637?g_st=ic" target="_blank">📍 Buka Maps</a>
+        </div>
+      </div>
+
+      <!-- RSVP / Comments -->
+      <div class="card comments">
+        <h3>Kirim Ucapan & Doa</h3>
+        <div class="form">
+          <input id="guestName" placeholder="Nama lengkap (opsional)">
+          <textarea id="guestMessage" rows="4" placeholder="Tuliskan ucapanmu..."></textarea>
+          <button class="primary" id="sendBtn">Kirim Ucapan</button>
+        </div>
+        <div class="comment-list" id="commentList"></div>
+      </div>
+
+      <!-- Note & Dresscode -->
+      <div class="card">
+        <h3>Catatan</h3>
+        <p>Mohon konfirmasi kehadiran melalui kolom komentar apabila memungkinkan. Untuk tamu yang datang, harap menjaga protokol sederhana dan berpakaian rapi / sopan.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div>Terima kasih atas doa dan kehadiran Anda. — Keluarga Aji & Intan</div>
+  </footer>
+</div>
+
+<script>
+  // Splash handler
+  const splash = document.getElementById('splash');
+  const openBtn = document.getElementById('openInvite');
+  const main = document.getElementById('mainContent');
+  const music = document.getElementById('bgMusic');
+  const musicControl = document.getElementById('musicControl');
+  const playBtn = document.getElementById('playBtn');
+
+  openBtn.addEventListener('click', ()=>{
+    splash.classList.add('hidden');
+    setTimeout(()=>{splash.style.display='none'; main.style.opacity=1; main.style.transform='translateY(0)';},600);
+    // try play music (may be blocked on mobile until interaction)
+    music.play().then(()=>{
+      musicControl.style.display='flex';
+      playBtn.textContent = '⏸️';
+    }).catch(()=>{
+      musicControl.style.display='flex';
+      playBtn.textContent = '▶️';
+    });
+  });
+
+  playBtn.addEventListener('click', ()=>{
+    if(music.paused){ music.play(); playBtn.textContent='⏸️'; } else { music.pause(); playBtn.textContent='▶️'; }
+  });
+
+  // Countdown setup
+  function createCountdownElements(){
+    const wrap = document.getElementById('countdown');
+    const labels = ['Hari','Jam','Menit','Detik'];
+    labels.forEach(l=>{
+      const b = document.createElement('div'); b.className='box';
+      b.innerHTML = `<div class="num" id="n-${l}">0</div><div class="label">${l}</div>`;
+      wrap.appendChild(b);
+    });
+  }
+  createCountdownElements();
+  const target = new Date('Sep 28, 2025 08:00:00 GMT+0700').getTime();
+  function updateCountdown(){
+    const now = new Date().getTime();
+    const dist = target - now;
+    if(dist <= 0){
+      document.getElementById('n-Hari').textContent = 0;
+      document.getElementById('n-Jam').textContent = 0;
+      document.getElementById('n-Menit').textContent = 0;
+      document.getElementById('n-Detik').textContent = 0;
+      clearInterval(countInt);
+      return;
+    }
+    const days = Math.floor(dist / (1000*60*60*24));
+    const hours = Math.floor((dist % (1000*60*60*24)) / (1000*60*60));
+    const minutes = Math.floor((dist % (1000*60*60)) / (1000*60));
+    const seconds = Math.floor((dist % (1000*60)) / 1000);
+    document.getElementById('n-Hari').textContent = days;
+    document.getElementById('n-Jam').textContent = hours;
+    document.getElementById('n-Menit').textContent = minutes;
+    document.getElementById('n-Detik').textContent = seconds;
+  }
+  const countInt = setInterval(updateCountdown, 1000);
+  updateCountdown();
+
+  // Comments with localStorage persistence
+  const commentList = document.getElementById('commentList');
+  const sendBtn = document.getElementById('sendBtn');
+  const guestName = document.getElementById('guestName');
+  const guestMessage = document.getElementById('guestMessage');
+
+  function renderComments(){
+    commentList.innerHTML='';
+    const data = JSON.parse(localStorage.getItem('aji_intan_comments')||'[]');
+    if(data.length===0){ commentList.innerHTML='<div style="color:var(--muted)">Belum ada ucapan, jadilah yang pertama ✨</div>'; return; }
+    data.slice().reverse().forEach(c=>{
+      const div = document.createElement('div'); div.className='comment-item';
+      div.innerHTML = `<div class="meta"><strong>${escapeHtml(c.name||'Tamu')}</strong> • <span>${c.time}</span></div><div>${escapeHtml(c.msg)}</div>`;
+      commentList.appendChild(div);
+    });
+  }
+
+  function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+  sendBtn.addEventListener('click', ()=>{
+    const name = guestName.value.trim();
+    const msg = guestMessage.value.trim();
+    if(!msg) return alert('Tulis ucapan dulu ya 😊');
+    const arr = JSON.parse(localStorage.getItem('aji_intan_comments')||'[]');
+    const now = new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+    arr.push({name: name || 'Tamu', msg, time: now});
+    localStorage.setItem('aji_intan_comments', JSON.stringify(arr));
+    guestMessage.value = ''; guestName.value = '';
+    renderComments();
+  });
+
+  renderComments();
+
+  // Allow click on gallery to open in new tab
+  document.querySelectorAll('#gallery img').forEach(img=>{
+    img.style.cursor='pointer';
+    img.addEventListener('click', ()=>{ window.open(img.src, '_blank'); });
+  });
+</script>
+
+</body>
+</html>
